@@ -228,6 +228,14 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     nav_2d_msgs::Twist2DStamped cmd_vel;
     cmd_vel.header.stamp = ros::Time::now();
     cmd_vel.velocity = best.traj.velocity;
+    double dx = pose.pose.x - goal_pose.pose.x,
+           dy = pose.pose.y - goal_pose.pose.y;
+    double dxy_sq = dx * dx + dy * dy;
+    if (dxy_sq < 0.25*0.25)
+    {
+     std::cout << "Currently inside xy goal tolerance, setting velocity to 0" << std::endl;
+     cmd_vel.velocity.x = 0;
+    }
 
     // debrief stateful scoring functions
     for (TrajectoryCritic::Ptr critic : critics_)
