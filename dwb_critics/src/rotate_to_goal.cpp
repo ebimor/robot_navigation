@@ -39,7 +39,7 @@
 #include <string>
 #include <vector>
 
-const double EPSILON = 1E-5;
+const double EPSILON = 2.0 //1E-5;
 
 PLUGINLIB_EXPORT_CLASS(dwb_critics::RotateToGoalCritic, dwb_local_planner::TrajectoryCritic)
 
@@ -63,6 +63,9 @@ bool RotateToGoalCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d
   {
     in_window_ = false;
   }
+  else
+    in_window_ = true;
+  
   goal_yaw_ = goal.theta;
   return true;
 }
@@ -87,7 +90,7 @@ double RotateToGoalCritic::scoreTrajectory(const dwb_msgs::Trajectory2D& traj)
   }
 
   double end_yaw = traj.poses.back().theta;
-  return angles::shortest_angular_distance(end_yaw, goal_yaw_);
+  return fabs(angles::shortest_angular_distance(end_yaw, goal_yaw_));
 }
 
 } /* namespace dwb_critics */
