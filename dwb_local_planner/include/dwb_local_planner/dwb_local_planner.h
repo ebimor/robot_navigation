@@ -193,6 +193,8 @@ protected:
   CostmapROSPtr costmap_ros_;
   TFListenerPtr tf_;
   DWBPublisher pub_;
+
+
 };
 
 }  // namespace dwb_local_planner

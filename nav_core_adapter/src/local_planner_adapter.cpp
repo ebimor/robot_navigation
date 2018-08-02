@@ -43,6 +43,12 @@
 namespace nav_core_adapter
 {
 
+  
+enum safetyStates{
+  CONTINUE,
+  PAUSE,
+};
+
 LocalPlannerAdapter::LocalPlannerAdapter() :
   planner_loader_("nav_core2", "nav_core2::LocalPlanner")
 {
@@ -65,6 +71,10 @@ void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf
   planner_->initialize(planner_loader_.getName(planner_name), tf_, costmap_ros_);
 
   odom_sub_ = std::make_shared<nav_2d_utils::OdomSubscriber>(nh);
+
+  last_safety_monitor_msgs_action_=PAUSE;
+  safety_monitor_subscriber_ = nh.subscribe("robot/desiredAction",1,&LocalPlannerAdapter::safetyMonitorCallback,this);
+
 }
 
 /**
@@ -83,9 +93,17 @@ bool LocalPlannerAdapter::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   nav_2d_msgs::Twist2D velocity = odom_sub_->getTwist();
 
   nav_2d_msgs::Twist2DStamped cmd_vel_2d;
+
+  ros::Duration time_since_last_safety_msgs_=ros::Time::now()-last_safety_monitor_msgs_time_;
+  ros::Duration dt(1);
+
   try
   {
-    cmd_vel_2d = planner_->computeVelocityCommands(pose2d, velocity);
+    if( last_safety_monitor_msgs_action_ == CONTINUE && time_since_last_safety_msgs_<dt){
+      cmd_vel_2d = planner_->computeVelocityCommands(pose2d, velocity);
+    }else{
+      ROS_INFO_STREAM("Controller is stopped for safety reasons!");
+    }
   }
   catch (const nav_core2::PlannerException& e)
   {
@@ -139,6 +157,29 @@ bool LocalPlannerAdapter::getRobotPose(nav_2d_msgs::Pose2DStamped& pose2d)
   pose2d = nav_2d_utils::stampedPoseToPose2D(current_pose);
   return true;
 }
+
+
+void LocalPlannerAdapter::safetyMonitorCallback(const cpr_gps_navigation_msgs::Safety::Ptr &msg){
+
+
+  std::string desired_action = msg->desiredAction;
+
+  if (desired_action == "CONTINUE"){
+     last_safety_monitor_msgs_action_ = CONTINUE;
+
+  } else if (desired_action == "PAUSE"){
+     last_safety_monitor_msgs_action_ = PAUSE;
+
+  } else {
+     ROS_ERROR("Path tracker doesn't recognize the desired action from the safety monitor.");
+     ROS_INFO_STREAM("Requested action: " << desired_action);
+     last_safety_monitor_msgs_action_ = PAUSE;
+  }
+
+  last_safety_monitor_msgs_time_ = ros::Time::now();
+
+}
+
 
 }  // namespace nav_core_adapter
 

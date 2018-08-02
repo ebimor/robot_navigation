@@ -463,8 +463,9 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   return transformed_plan;
 }
 
+
 }  // namespace dwb_local_planner
 
 
-//  register this planner as a LocalPlanner plugin
+//  register this planner as a plugin for LocalPlanner plugin
 PLUGINLIB_EXPORT_CLASS(dwb_local_planner::DWBLocalPlanner, nav_core2::LocalPlanner)

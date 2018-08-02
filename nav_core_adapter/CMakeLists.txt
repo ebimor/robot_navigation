@@ -4,11 +4,11 @@ project(nav_core_adapter)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED
-    COMPONENTS dwb_msgs geometry_msgs nav_2d_msgs nav_core nav_core2 nav_2d_utils nav_msgs pluginlib tf visualization_msgs
+    COMPONENTS dwb_msgs geometry_msgs nav_2d_msgs nav_core nav_core2 nav_2d_utils nav_msgs pluginlib tf visualization_msgs cpr_gps_navigation_msgs
 )
 
 catkin_package(
-    CATKIN_DEPENDS dwb_msgs geometry_msgs nav_2d_msgs nav_2d_utils nav_core nav_core2 nav_msgs pluginlib tf visualization_msgs
+    CATKIN_DEPENDS dwb_msgs geometry_msgs nav_2d_msgs nav_2d_utils nav_core nav_core2 nav_msgs pluginlib tf visualization_msgs cpr_gps_navigation_msgs
     INCLUDE_DIRS include
     LIBRARIES local_planner_adapter global_planner_adapter global_planner_adapter2
 )

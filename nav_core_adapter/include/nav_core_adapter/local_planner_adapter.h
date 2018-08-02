@@ -34,7 +34,8 @@
 
 #ifndef NAV_CORE_ADAPTER_LOCAL_PLANNER_ADAPTER_H
 #define NAV_CORE_ADAPTER_LOCAL_PLANNER_ADAPTER_H
-
+#include <ros/ros.h>
+#include <cpr_gps_navigation_msgs/Safety.h>
 #include <nav_core/base_local_planner.h>
 #include <nav_core2/local_planner.h>
 #include <nav_2d_utils/odom_subscriber.h>
@@ -78,6 +79,12 @@ protected:
   // Pointer Copies
   TFListenerPtr tf_;
   CostmapROSPtr costmap_ros_;
+
+
+  ros::Subscriber safety_monitor_subscriber_;
+  int last_safety_monitor_msgs_action_;
+  ros::Time last_safety_monitor_msgs_time_;
+  void safetyMonitorCallback(const cpr_gps_navigation_msgs::Safety::Ptr &msg);
 };
 
 }  // namespace nav_core_adapter
