@@ -12,3 +12,14 @@
  * `dwb_critics` - Critic plugin definitions needed for replicating behavior of dwa
 
 And more to come!
+
+Safety Branch:
+
+Added the capability to pause the controller when needed. The planner is now
+listens to the "robot/desiredAction" topic and publishes the twist message (calculated
+by the planner) ONLY if the it has recieved a "CONTINUE" command during the last
+"dt" seconds. The planner immediately pauses the controller if a "PAUSE" command is
+recieved on the "robot/desiredAction" topic.
+
+The safety monitor callback is a protected member of the LocalPlannerAdapter; therefore does
+not change anything about the nav_core2 interfaces.
